@@ -137,10 +137,10 @@ export class MessageService {
       message.to = request.to;
       message.from = request.from;
       message.type = request.type as ConvoType;
-      message.body = request.messageText;
-      message.timestamp = request.createdAt;
-      message.created_at = request.createdAt;
-      message.updated_at = request.updatedAt;
+      message.body = request.body;
+      message.timestamp = request.timestamp;
+      message.created_at = new Date();
+      message.updated_at = new Date();
 
       // Find or create conversation
       let conversationId: string | null = null;
@@ -156,8 +156,8 @@ export class MessageService {
         conversation.to = request.to;
         conversation.from = request.from;
         conversation.type = 'sms';
-        conversation.created_at = request.createdAt;
-        conversation.updated_at = request.updatedAt;
+        conversation.created_at = new Date();
+        conversation.updated_at = new Date();
         conversation.message_ids = [];
         await conversationRepository.save(conversation);
         conversationId = conversation.id;
@@ -192,11 +192,11 @@ export class MessageService {
       const message = new Messages();
       message.to = request.to;
       message.from = request.from;
-      message.type = request.type;
-      message.body = request.messageText;
-      message.timestamp = request.createdAt;
-      message.created_at = request.createdAt;
-      message.updated_at = request.updatedAt;
+      message.type = 'email';
+      message.body = request.body;
+      message.timestamp = request.timestamp;
+      message.created_at = new Date();
+      message.updated_at = new Date();
 
       // Find or create conversation
       let conversationId: string | null = null;
@@ -212,8 +212,8 @@ export class MessageService {
         conversation.to = request.to;
         conversation.from = request.from;
         conversation.type = 'email';
-        conversation.created_at = request.createdAt;
-        conversation.updated_at = request.updatedAt;
+        conversation.created_at = new Date();
+        conversation.updated_at = new Date();
         conversation.message_ids = [];
         await conversationRepository.save(conversation);
         conversationId = conversation.id;

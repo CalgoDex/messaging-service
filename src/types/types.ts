@@ -23,21 +23,20 @@ export interface EmailRequest {
 }
 
 export interface SmsWebHookRequest {
-  id: string;
-  to: string;
   from: string;
+  to: string;
   type: SmsType;
-  messageText: string;
-  createdAt: Date;
-  updatedAt: Date;
+  messaging_provider_id: string;
+  body: string;
+  attachments?: string[];
+  timestamp: Date;
 }
 
 export interface EmailWebHookRequest {
-  id: string;
-  to: string;
   from: string;
-  type: EmailType;
-  messageText: string;
-  createdAt: Date;
-  updatedAt: Date;
+  to: string;
+  xillio_id: string;
+  body: string;
+  attachments?: string[];
+  timestamp: Date;
 }
