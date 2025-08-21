@@ -6,10 +6,10 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { ConvoType } from '../types/types';
-import { Conversation } from './Conversation';
+import { Conversations } from './Conversations';
 
 @Entity()
-export class Message {
+export class Messages {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -37,7 +37,7 @@ export class Message {
   @Column()
   updated_at: Date;
 
-  @ManyToOne(() => Conversation, (conversation) => conversation.id)
+  @ManyToOne(() => Conversations, (conversation) => conversation.id)
   @JoinColumn({ name: 'conversation_id' })
-  conversation: Conversation;
+  conversation: Conversations;
 }

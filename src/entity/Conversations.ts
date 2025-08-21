@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 import { ConvoType } from "../types/types"
 
 @Entity()
-export class Conversation {
+export class Conversations {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

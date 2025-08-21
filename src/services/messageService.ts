@@ -1,5 +1,5 @@
-import { Message } from '../entity/Message';
-import { Conversation } from '../entity/Conversation';
+import { Messages } from '../entity/Messages';
+import { Conversations } from '../entity/Conversations';
 import { AppDataSource } from '../data-source';
 import {
   SmsRequest,
@@ -9,11 +9,11 @@ import {
   ConvoType,
 } from '../types/types';
 
-const conversationRepository = AppDataSource.getRepository(Conversation);
-const messageRepository = AppDataSource.getRepository(Message);
+const conversationRepository = AppDataSource.getRepository(Conversations);
+const messageRepository = AppDataSource.getRepository(Messages);
 
 export class MessageService {
-  async sendSms(request: SmsRequest): Promise<Message | null> {
+  async sendSms(request: SmsRequest): Promise<Messages | null> {
     // wrap in transaction
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
@@ -28,8 +28,10 @@ export class MessageService {
         ],
       });
 
+      console.log('conversationInstance: ', conversationInstance);
+
       if (!conversationInstance) {
-        const conversation = new Conversation();
+        const conversation = new Conversations();
         conversation.to = request.to;
         conversation.from = request.from;
         conversation.type = request.type as ConvoType;
@@ -37,12 +39,13 @@ export class MessageService {
         conversation.updated_at = new Date();
         conversation.message_ids = [];
         await conversationRepository.save(conversation);
+        console.log('conversation(new): ', conversation);
         conversationId = conversation.id;
       } else {
         conversationId = conversationInstance.id;
       }
 
-      const message = new Message();
+      const message = new Messages();
       message.to = request.to;
       message.from = request.from;
       message.type = request.type as ConvoType;
@@ -73,7 +76,7 @@ export class MessageService {
     }
   }
 
-  async sendEmail(request: EmailRequest): Promise<Message | null> {
+  async sendEmail(request: EmailRequest): Promise<Messages | null> {
     // For now, treat email similar to SMS but with email type
     try {
       // Create a new conversation or find existing one
@@ -86,7 +89,7 @@ export class MessageService {
       });
 
       if (!conversationInstance) {
-        const conversation = new Conversation();
+        const conversation = new Conversations();
         conversation.to = request.to;
         conversation.from = request.from;
         conversation.type = 'email';
@@ -99,7 +102,7 @@ export class MessageService {
         conversationId = conversationInstance.id;
       }
 
-      const message = new Message();
+      const message = new Messages();
       message.to = request.to;
       message.from = request.from;
       message.type = request.type;
@@ -127,10 +130,10 @@ export class MessageService {
     }
   }
 
-  async handleSmsEvent(request: SmsWebHookRequest): Promise<Message | null> {
+  async handleSmsEvent(request: SmsWebHookRequest): Promise<Messages | null> {
     try {
       // Convert webhook request to internal message format
-      const message = new Message();
+      const message = new Messages();
       message.to = request.to;
       message.from = request.from;
       message.type = request.type as ConvoType;
@@ -149,7 +152,7 @@ export class MessageService {
       });
 
       if (!conversationInstance) {
-        const conversation = new Conversation();
+        const conversation = new Conversations();
         conversation.to = request.to;
         conversation.from = request.from;
         conversation.type = 'sms';
@@ -183,10 +186,10 @@ export class MessageService {
 
   async handleEmailEvent(
     request: EmailWebHookRequest
-  ): Promise<Message | null> {
+  ): Promise<Messages | null> {
     try {
       // Convert webhook request to internal message format
-      const message = new Message();
+      const message = new Messages();
       message.to = request.to;
       message.from = request.from;
       message.type = request.type;
@@ -205,7 +208,7 @@ export class MessageService {
       });
 
       if (!conversationInstance) {
-        const conversation = new Conversation();
+        const conversation = new Conversations();
         conversation.to = request.to;
         conversation.from = request.from;
         conversation.type = 'email';
@@ -237,7 +240,7 @@ export class MessageService {
     }
   }
 
-  async getAllConversations(): Promise<Conversation[] | null> {
+  async getAllConversations(): Promise<Conversations[] | null> {
     try {
       const conversations = await conversationRepository.find({
         order: { updated_at: 'DESC' },
@@ -249,7 +252,7 @@ export class MessageService {
     }
   }
 
-  async getMessagesByConvoId(id: string): Promise<Message[] | null> {
+  async getMessagesByConvoId(id: string): Promise<Messages[] | null> {
     try {
       const messages = await messageRepository.find({
         where: { conversation_id: id },
