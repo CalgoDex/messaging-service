@@ -8,7 +8,6 @@ import {
   EmailWebHookRequest,
   ConvoType,
 } from '../types/types';
-import { In } from 'typeorm';
 
 const conversationRepository = AppDataSource.getRepository(Conversation);
 const messageRepository = AppDataSource.getRepository(Message);
@@ -21,19 +20,22 @@ export class MessageService {
     await queryRunner.startTransaction();
     try {
       // get conversation id or start a new conversation
-      let conversationId: number | null = null;
+      let conversationId: string | null = null;
       let conversationInstance = await conversationRepository.findOne({
-        where: {
-          participant_ids: In([request.to, request.from]),
-        },
+        where: [
+          { to: request.to, from: request.from },
+          { to: request.from, from: request.to },
+        ],
       });
 
       if (!conversationInstance) {
         const conversation = new Conversation();
-        conversation.participant_ids = [request.to, request.from];
+        conversation.to = request.to;
+        conversation.from = request.from;
         conversation.type = request.type as ConvoType;
         conversation.created_at = new Date();
         conversation.updated_at = new Date();
+        conversation.message_ids = [];
         await conversationRepository.save(conversation);
         conversationId = conversation.id;
       } else {
@@ -56,8 +58,10 @@ export class MessageService {
       const convo = await conversationRepository.findOne({
         where: { id: conversationId },
       });
-      convo.message_ids.push(message.id.toString());
-      await conversationRepository.save(convo);
+      if (convo) {
+        convo.message_ids.push(message.id);
+        await conversationRepository.save(convo);
+      }
 
       await queryRunner.commitTransaction();
       return message;
@@ -73,19 +77,22 @@ export class MessageService {
     // For now, treat email similar to SMS but with email type
     try {
       // Create a new conversation or find existing one
-      let conversationId: number | null = null;
+      let conversationId: string | null = null;
       let conversationInstance = await conversationRepository.findOne({
-        where: {
-          participant_ids: In([request.to, request.from]),
-        },
+        where: [
+          { to: request.to, from: request.from },
+          { to: request.from, from: request.to },
+        ],
       });
 
       if (!conversationInstance) {
         const conversation = new Conversation();
-        conversation.participant_ids = [request.to, request.from];
+        conversation.to = request.to;
+        conversation.from = request.from;
         conversation.type = 'email';
         conversation.created_at = new Date();
         conversation.updated_at = new Date();
+        conversation.message_ids = [];
         await conversationRepository.save(conversation);
         conversationId = conversation.id;
       } else {
@@ -109,7 +116,7 @@ export class MessageService {
         where: { id: conversationId },
       });
       if (convo) {
-        convo.message_ids.push(message.id.toString());
+        convo.message_ids.push(message.id);
         await conversationRepository.save(convo);
       }
 
@@ -131,21 +138,24 @@ export class MessageService {
       message.timestamp = request.createdAt;
       message.created_at = request.createdAt;
       message.updated_at = request.updatedAt;
-      
+
       // Find or create conversation
-      let conversationId: number | null = null;
+      let conversationId: string | null = null;
       let conversationInstance = await conversationRepository.findOne({
-        where: {
-          participant_ids: In([request.to, request.from]),
-        },
+        where: [
+          { to: request.to, from: request.from },
+          { to: request.from, from: request.to },
+        ],
       });
 
       if (!conversationInstance) {
         const conversation = new Conversation();
-        conversation.participant_ids = [request.to, request.from];
+        conversation.to = request.to;
+        conversation.from = request.from;
         conversation.type = 'sms';
         conversation.created_at = request.createdAt;
         conversation.updated_at = request.updatedAt;
+        conversation.message_ids = [];
         await conversationRepository.save(conversation);
         conversationId = conversation.id;
       } else {
@@ -160,7 +170,7 @@ export class MessageService {
         where: { id: conversationId },
       });
       if (convo) {
-        convo.message_ids.push(message.id.toString());
+        convo.message_ids.push(message.id);
         await conversationRepository.save(convo);
       }
 
@@ -184,21 +194,24 @@ export class MessageService {
       message.timestamp = request.createdAt;
       message.created_at = request.createdAt;
       message.updated_at = request.updatedAt;
-      
+
       // Find or create conversation
-      let conversationId: number | null = null;
+      let conversationId: string | null = null;
       let conversationInstance = await conversationRepository.findOne({
-        where: {
-          participant_ids: In([request.to, request.from]),
-        },
+        where: [
+          { to: request.to, from: request.from },
+          { to: request.from, from: request.to },
+        ],
       });
 
       if (!conversationInstance) {
         const conversation = new Conversation();
-        conversation.participant_ids = [request.to, request.from];
+        conversation.to = request.to;
+        conversation.from = request.from;
         conversation.type = 'email';
         conversation.created_at = request.createdAt;
         conversation.updated_at = request.updatedAt;
+        conversation.message_ids = [];
         await conversationRepository.save(conversation);
         conversationId = conversation.id;
       } else {
@@ -213,7 +226,7 @@ export class MessageService {
         where: { id: conversationId },
       });
       if (convo) {
-        convo.message_ids.push(message.id.toString());
+        convo.message_ids.push(message.id);
         await conversationRepository.save(convo);
       }
 
@@ -227,7 +240,7 @@ export class MessageService {
   async getAllConversations(): Promise<Conversation[] | null> {
     try {
       const conversations = await conversationRepository.find({
-        order: { updated_at: 'DESC' }
+        order: { updated_at: 'DESC' },
       });
       return conversations;
     } catch (error) {
@@ -239,8 +252,8 @@ export class MessageService {
   async getMessagesByConvoId(id: string): Promise<Message[] | null> {
     try {
       const messages = await messageRepository.find({
-        where: { conversation_id: parseInt(id) },
-        order: { timestamp: 'ASC' }
+        where: { conversation_id: id },
+        order: { timestamp: 'ASC' },
       });
       return messages;
     } catch (error) {
