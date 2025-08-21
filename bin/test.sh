@@ -5,6 +5,7 @@
 
 BASE_URL="http://localhost:8080"
 CONTENT_TYPE="Content-Type: application/json"
+API_KEY="1234567890"
 
 echo "=== Testing Messaging Service Endpoints ==="
 echo "Base URL: $BASE_URL"
@@ -12,7 +13,7 @@ echo
 
 # Test 1: Send SMS
 echo "1. Testing SMS send..."
-curl -X POST "$BASE_URL/api/messages/sms" \
+curl -X POST "$BASE_URL/api/v1/messages/send/sms" \
   -H "$CONTENT_TYPE" \
   -d '{
     "from": "+12016661234",
@@ -26,7 +27,7 @@ curl -X POST "$BASE_URL/api/messages/sms" \
 
 # Test 2: Send MMS
 echo "2. Testing MMS send..."
-curl -X POST "$BASE_URL/api/messages/sms" \
+curl -X POST "$BASE_URL/api/v1/messages/send/sms" \
   -H "$CONTENT_TYPE" \
   -d '{
     "from": "+12016661234",
@@ -40,7 +41,7 @@ curl -X POST "$BASE_URL/api/messages/sms" \
 
 # Test 3: Send Email
 echo "3. Testing Email send..."
-curl -X POST "$BASE_URL/api/messages/email" \
+curl -X POST "$BASE_URL/api/v1/messages/email" \
   -H "$CONTENT_TYPE" \
   -d '{
     "from": "user@usehatchapp.com",
@@ -53,7 +54,7 @@ curl -X POST "$BASE_URL/api/messages/email" \
 
 # Test 4: Simulate incoming SMS webhook
 echo "4. Testing incoming SMS webhook..."
-curl -X POST "$BASE_URL/api/webhooks/sms" \
+curl -X POST "$BASE_URL/api/v1/webhooks/sms" \
   -H "$CONTENT_TYPE" \
   -d '{
     "from": "+18045551234",
@@ -68,7 +69,7 @@ curl -X POST "$BASE_URL/api/webhooks/sms" \
 
 # Test 5: Simulate incoming MMS webhook
 echo "5. Testing incoming MMS webhook..."
-curl -X POST "$BASE_URL/api/webhooks/sms" \
+curl -X POST "$BASE_URL/api/v1/webhooks/sms" \
   -H "$CONTENT_TYPE" \
   -d '{
     "from": "+18045551234",
@@ -83,7 +84,7 @@ curl -X POST "$BASE_URL/api/webhooks/sms" \
 
 # Test 6: Simulate incoming Email webhook
 echo "6. Testing incoming Email webhook..."
-curl -X POST "$BASE_URL/api/webhooks/email" \
+curl -X POST "$BASE_URL/api/v1/webhooks/email" \
   -H "$CONTENT_TYPE" \
   -d '{
     "from": "contact@gmail.com",
@@ -97,13 +98,13 @@ curl -X POST "$BASE_URL/api/webhooks/email" \
 
 # Test 7: Get conversations
 echo "7. Testing get conversations..."
-curl -X GET "$BASE_URL/api/conversations" \
+curl -X GET "$BASE_URL/api/v1/conversations" \
   -H "$CONTENT_TYPE" \
   -w "\nStatus: %{http_code}\n\n"
 
 # Test 8: Get messages for a conversation (example conversation ID)
 echo "8. Testing get messages for conversation..."
-curl -X GET "$BASE_URL/api/conversations/1/messages" \
+curl -X GET "$BASE_URL/api/v1/conversations/1/messages" \
   -H "$CONTENT_TYPE" \
   -w "\nStatus: %{http_code}\n\n"
 
