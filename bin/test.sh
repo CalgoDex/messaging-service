@@ -4,7 +4,7 @@
 # This script tests the local messaging service using the JSON examples from README.md
 
 API_KEY="1234567890" #make sure to set this in .env file
-BASE_URL="http://localhost:8080"
+BASE_URL="http://localhost:3000"
 CONTENT_TYPE="Content-Type: application/json"
 AUTHORIZATION="Authorization: Bearer $API_KEY"
 
@@ -44,7 +44,7 @@ curl -X POST "$BASE_URL/api/v1/messages/send/sms" \
 
 # Test 3: Send Email
 echo "3. Testing Email send..."
-curl -X POST "$BASE_URL/api/v1/messages/email" \
+curl -X POST "$BASE_URL/api/v1/messages/send/email" \
   -H "$CONTENT_TYPE" \
   -H "$AUTHORIZATION" \
   -d '{
@@ -111,6 +111,8 @@ curl -X GET "$BASE_URL/api/v1/conversations" \
   -w "\nStatus: %{http_code}\n\n"
 
 # Test 8: Get messages for a conversation (example conversation ID)
+# this will fail. Should run the above tests first then choose a
+# conversation id from the database and use that here instead of 1.
 echo "8. Testing get messages for conversation..."
 curl -X GET "$BASE_URL/api/v1/conversations/1/messages" \
   -H "$CONTENT_TYPE" \
