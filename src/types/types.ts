@@ -1,15 +1,15 @@
 export type SmsType = 'sms' | 'mms';
 
-export type EmailType = 'email';
+export type ConvoType = 'sms' | 'email';
 
-export type ConvoType = 'sms' | 'mms' | 'email';
+export type EmailType = 'email';
 
 export interface SmsRequest {
   to: string;
   from: string;
   type: SmsType;
   body: string;
-  attachments?: string[]; // array of attachment urls
+  attachments?: string[];
   timestamp: Date;
 }
 
@@ -18,7 +18,7 @@ export interface EmailRequest {
   from: string;
   type: EmailType;
   body: string;
-  attachments?: string[]; // array of attachment urls
+  attachments?: string[];
   timestamp: Date;
 }
 

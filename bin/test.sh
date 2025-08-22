@@ -3,9 +3,10 @@
 # Test script for messaging service endpoints
 # This script tests the local messaging service using the JSON examples from README.md
 
+API_KEY="1234567890" #make sure to set this in .env file
 BASE_URL="http://localhost:8080"
 CONTENT_TYPE="Content-Type: application/json"
-API_KEY="1234567890"
+AUTHORIZATION="Authorization: Bearer $API_KEY"
 
 echo "=== Testing Messaging Service Endpoints ==="
 echo "Base URL: $BASE_URL"
@@ -15,6 +16,7 @@ echo
 echo "1. Testing SMS send..."
 curl -X POST "$BASE_URL/api/v1/messages/send/sms" \
   -H "$CONTENT_TYPE" \
+  -H "$AUTHORIZATION" \
   -d '{
     "from": "+12016661234",
     "to": "+18045551234",
@@ -29,6 +31,7 @@ curl -X POST "$BASE_URL/api/v1/messages/send/sms" \
 echo "2. Testing MMS send..."
 curl -X POST "$BASE_URL/api/v1/messages/send/sms" \
   -H "$CONTENT_TYPE" \
+  -H "$AUTHORIZATION" \
   -d '{
     "from": "+12016661234",
     "to": "+18045551234",
@@ -43,6 +46,7 @@ curl -X POST "$BASE_URL/api/v1/messages/send/sms" \
 echo "3. Testing Email send..."
 curl -X POST "$BASE_URL/api/v1/messages/email" \
   -H "$CONTENT_TYPE" \
+  -H "$AUTHORIZATION" \
   -d '{
     "from": "user@usehatchapp.com",
     "to": "contact@gmail.com",
@@ -56,6 +60,7 @@ curl -X POST "$BASE_URL/api/v1/messages/email" \
 echo "4. Testing incoming SMS webhook..."
 curl -X POST "$BASE_URL/api/v1/webhooks/sms" \
   -H "$CONTENT_TYPE" \
+  -H "$AUTHORIZATION" \
   -d '{
     "from": "+18045551234",
     "to": "+12016661234",
@@ -71,6 +76,7 @@ curl -X POST "$BASE_URL/api/v1/webhooks/sms" \
 echo "5. Testing incoming MMS webhook..."
 curl -X POST "$BASE_URL/api/v1/webhooks/sms" \
   -H "$CONTENT_TYPE" \
+  -H "$AUTHORIZATION" \
   -d '{
     "from": "+18045551234",
     "to": "+12016661234",
@@ -86,6 +92,7 @@ curl -X POST "$BASE_URL/api/v1/webhooks/sms" \
 echo "6. Testing incoming Email webhook..."
 curl -X POST "$BASE_URL/api/v1/webhooks/email" \
   -H "$CONTENT_TYPE" \
+  -H "$AUTHORIZATION" \
   -d '{
     "from": "contact@gmail.com",
     "to": "user@usehatchapp.com",
@@ -100,12 +107,14 @@ curl -X POST "$BASE_URL/api/v1/webhooks/email" \
 echo "7. Testing get conversations..."
 curl -X GET "$BASE_URL/api/v1/conversations" \
   -H "$CONTENT_TYPE" \
+  -H "$AUTHORIZATION" \
   -w "\nStatus: %{http_code}\n\n"
 
 # Test 8: Get messages for a conversation (example conversation ID)
 echo "8. Testing get messages for conversation..."
 curl -X GET "$BASE_URL/api/v1/conversations/1/messages" \
   -H "$CONTENT_TYPE" \
+  -H "$AUTHORIZATION" \
   -w "\nStatus: %{http_code}\n\n"
 
 echo "=== Test script completed ===" 

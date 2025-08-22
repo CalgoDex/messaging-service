@@ -5,5 +5,7 @@ set -e
 echo "Starting the application..."
 echo "Environment: ${ENV:-development}"
 
-# Add your application startup commands here
+# run the application
+npm run start:dev
+
 echo "Application started successfully!" 
